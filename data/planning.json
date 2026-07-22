@@ -1,0 +1,41 @@
+{
+  "events": [
+    {
+      "id": "mehndi",
+      "name": "Mehndi",
+      "date": "2027-02-12",
+      "location": "Patel family home",
+      "leadId": "bride-owner",
+      "notes": "Starter Event for the first planning loop."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "confirm-mehndi-artist",
+      "title": "Confirm Mehndi artist shortlist",
+      "eventId": "mehndi",
+      "ownerId": "bride-owner",
+      "dueDate": "2026-07-21",
+      "status": "In Progress",
+      "notes": "Compare quotes and availability."
+    },
+    {
+      "id": "draft-mehndi-flow",
+      "title": "Draft Mehndi flow",
+      "eventId": "mehndi",
+      "ownerId": "bride-owner",
+      "dueDate": "2026-07-26",
+      "status": "Not Started",
+      "notes": "Include arrival window, music, and family photo time."
+    },
+    {
+      "id": "book-ceremony-priest",
+      "title": "Book ceremony priest",
+      "ownerId": "bride-owner",
+      "dueDate": "2026-07-24",
+      "status": "Blocked",
+      "blockedReason": "Waiting for family to confirm the ceremony time.",
+      "notes": "Wedding-level Task until ceremony Event is added."
+    }
+  ]
+}

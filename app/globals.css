@@ -35,6 +35,7 @@ a {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -332,6 +333,108 @@ button:focus-visible {
   margin-bottom: 10px;
 }
 
+.dashboard-columns,
+.record-list {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.signal-panel,
+.record-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.signal-panel {
+  min-height: 190px;
+  padding: 20px;
+}
+
+.signal-panel h3,
+.record-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.task-list {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task-list li {
+  display: grid;
+  gap: 4px;
+}
+
+.task-list a {
+  color: var(--indigo);
+  font-weight: 800;
+}
+
+.task-list span,
+.muted {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.record-card {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.record-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.record-card-header p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.record-card-header strong {
+  color: var(--indigo);
+  white-space: nowrap;
+}
+
+.progress-track {
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: #eee6dc;
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  background: var(--teal);
+}
+
+.compact-form {
+  max-width: none;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.status-form {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) minmax(220px, 1fr) max-content;
+  gap: 12px;
+  align-items: end;
+}
+
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
@@ -406,7 +509,8 @@ tr:last-child td {
   }
 
   .summary-grid,
-  .area-grid {
+  .area-grid,
+  .dashboard-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -420,7 +524,9 @@ tr:last-child td {
 
   .summary-grid,
   .area-grid,
+  .dashboard-columns,
   .details-form,
+  .status-form,
   .nav-list {
     grid-template-columns: 1fr;
   }
