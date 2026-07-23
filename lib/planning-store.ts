@@ -9,10 +9,19 @@ import {
   type PlanningTask,
   type WeddingEvent
 } from "@/lib/events-and-tasks";
+import {
+  applyVendorStatus,
+  assertValidVendorCategory,
+  assertValidVendorStatus,
+  createVendorRecord,
+  type Vendor,
+  type VendorStatus
+} from "@/lib/vendors";
 
 export type PlanningData = {
   events: WeddingEvent[];
   tasks: PlanningTask[];
+  vendors: Vendor[];
 };
 
 const defaultPlanningData: PlanningData = {
@@ -54,6 +63,30 @@ const defaultPlanningData: PlanningData = {
       blockedReason: "Waiting for family to confirm the ceremony time.",
       notes: "Wedding-level Task until ceremony Event is added."
     }
+  ],
+  vendors: [
+    {
+      id: "lotus-banquet-hall",
+      name: "Lotus Banquet Hall",
+      category: "Venue",
+      status: "Shortlisted",
+      eventIds: ["mehndi"],
+      contactName: "Anika Shah",
+      contactEmail: "events@lotus.example",
+      contactPhone: "555-0101",
+      notes: "Ask about outside catering and early setup access."
+    },
+    {
+      id: "raaga-sounds",
+      name: "Raaga Sounds",
+      category: "Music",
+      status: "Contacted",
+      eventIds: ["mehndi"],
+      contactName: "Dev Mehta",
+      contactEmail: "bookings@raaga.example",
+      contactPhone: "555-0102",
+      notes: "Available for dhol and DJ package."
+    }
   ]
 };
 
@@ -68,7 +101,8 @@ export async function getPlanningData(): Promise<PlanningData> {
 
     return {
       events: parsed.events ?? defaultPlanningData.events,
-      tasks: parsed.tasks ?? defaultPlanningData.tasks
+      tasks: parsed.tasks ?? defaultPlanningData.tasks,
+      vendors: parsed.vendors ?? defaultPlanningData.vendors
     };
   } catch (error) {
     if (isMissingFileError(error)) {
@@ -137,6 +171,55 @@ export function createTask(
   return {
     ...planningData,
     tasks: [...planningData.tasks, task]
+  };
+}
+
+export function createVendor(
+  planningData: PlanningData,
+  actor: Collaborator,
+  input: Omit<Vendor, "id">
+): PlanningData {
+  assertCanPerform(actor.role, "createPlanningRecord");
+
+  return {
+    ...planningData,
+    vendors: [...planningData.vendors, createVendorRecord(randomUUID(), input)]
+  };
+}
+
+export function updateVendor(
+  planningData: PlanningData,
+  actor: Collaborator,
+  vendor: Vendor
+): PlanningData {
+  assertCanPerform(actor.role, "editPlanningRecord");
+  assertValidVendorCategory(vendor.category);
+  assertValidVendorStatus(vendor.status);
+
+  return {
+    ...planningData,
+    vendors: planningData.vendors.map((existingVendor) =>
+      existingVendor.id === vendor.id ? vendor : existingVendor
+    )
+  };
+}
+
+export function updateVendorStatus(
+  planningData: PlanningData,
+  actor: Collaborator,
+  input: {
+    vendorId: string;
+    status: VendorStatus;
+  }
+): PlanningData {
+  assertCanPerform(actor.role, "editPlanningRecord");
+  assertValidVendorStatus(input.status);
+
+  return {
+    ...planningData,
+    vendors: planningData.vendors.map((vendor) =>
+      vendor.id === input.vendorId ? applyVendorStatus(vendor, input.status) : vendor
+    )
   };
 }
 

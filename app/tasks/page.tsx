@@ -31,6 +31,9 @@ export default async function TasksPage() {
   const eventById = new Map(
     planningData.events.map((event) => [event.id, event])
   );
+  const vendorById = new Map(
+    planningData.vendors.map((vendor) => [vendor.id, vendor])
+  );
   const canCreate = canPerform(currentCollaborator.role, "createPlanningRecord");
   const canEdit = canPerform(currentCollaborator.role, "editPlanningRecord");
   const today = new Date();
@@ -113,6 +116,17 @@ export default async function TasksPage() {
               </select>
             </label>
             <label>
+              Vendor
+              <select name="vendorId" defaultValue="none">
+                <option value="none">No Vendor</option>
+                {planningData.vendors.map((vendor) => (
+                  <option value={vendor.id} key={vendor.id}>
+                    {vendor.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
               Due date
               <input name="dueDate" type="date" required />
             </label>
@@ -171,6 +185,9 @@ export default async function TasksPage() {
                 </div>
                 <p className="muted">
                   Owner: {collaboratorById.get(task.ownerId)?.name ?? "Unassigned"}
+                  {task.vendorId
+                    ? ` - Vendor: ${vendorById.get(task.vendorId)?.name ?? "Unknown"}`
+                    : ""}
                   {task.blockedReason ? ` - Blocked: ${task.blockedReason}` : ""}
                 </p>
 
@@ -230,6 +247,21 @@ export default async function TasksPage() {
                       {acceptedCollaborators.map((collaborator) => (
                         <option value={collaborator.id} key={collaborator.id}>
                           {collaborator.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Vendor
+                    <select
+                      name="vendorId"
+                      defaultValue={task.vendorId ?? "none"}
+                      disabled={!canEdit}
+                    >
+                      <option value="none">No Vendor</option>
+                      {planningData.vendors.map((vendor) => (
+                        <option value={vendor.id} key={vendor.id}>
+                          {vendor.name}
                         </option>
                       ))}
                     </select>

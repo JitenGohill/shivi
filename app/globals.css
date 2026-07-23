@@ -343,6 +343,12 @@ button:focus-visible {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.pipeline-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
 .signal-panel,
 .record-card {
   border: 1px solid var(--line);
@@ -354,6 +360,12 @@ button:focus-visible {
 .signal-panel {
   min-height: 190px;
   padding: 20px;
+}
+
+a.signal-panel:hover,
+a.signal-panel:focus-visible {
+  border-color: var(--teal);
+  outline: none;
 }
 
 .signal-panel h3,
@@ -378,6 +390,57 @@ button:focus-visible {
 .task-list a {
   color: var(--indigo);
   font-weight: 800;
+}
+
+.category-list {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.category-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+}
+
+.category-list strong {
+  color: var(--indigo);
+}
+
+.checkbox-field {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.checkbox-field legend {
+  padding: 0 6px;
+  color: #4b443d;
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 650;
+}
+
+.checkbox-label input {
+  width: auto;
 }
 
 .task-list span,
@@ -433,6 +496,10 @@ button:focus-visible {
   grid-template-columns: minmax(160px, 220px) minmax(220px, 1fr) max-content;
   gap: 12px;
   align-items: end;
+}
+
+.vendor-status-form {
+  grid-template-columns: minmax(160px, 220px) max-content;
 }
 
 .table-wrap {
@@ -510,7 +577,9 @@ tr:last-child td {
 
   .summary-grid,
   .area-grid,
-  .dashboard-columns {
+  .dashboard-columns,
+  .pipeline-grid,
+  .checkbox-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -525,6 +594,8 @@ tr:last-child td {
   .summary-grid,
   .area-grid,
   .dashboard-columns,
+  .pipeline-grid,
+  .checkbox-grid,
   .details-form,
   .status-form,
   .nav-list {

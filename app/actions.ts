@@ -16,12 +16,20 @@ import { normalizeTaskStatus } from "@/lib/events-and-tasks";
 import {
   createEvent,
   createTask,
+  createVendor,
   getPlanningData,
   savePlanningData,
   updateEvent,
   updateTask,
-  updateTaskStatus
+  updateTaskStatus,
+  updateVendor,
+  updateVendorStatus
 } from "@/lib/planning-store";
+import {
+  normalizeVendorCategory,
+  normalizeVendorEventIds,
+  normalizeVendorStatus
+} from "@/lib/vendors";
 import { normalizeWedding, saveWedding } from "@/lib/wedding-store";
 
 export async function updateWeddingDetails(formData: FormData) {
@@ -121,11 +129,13 @@ export async function createTaskAction(formData: FormData) {
   const currentCollaborator = await getCurrentCollaborator();
   const planningData = await getPlanningData();
   const eventId = cleanFormValue(formData.get("eventId"));
+  const vendorId = cleanFormValue(formData.get("vendorId"));
 
   await savePlanningData(
     createTask(planningData, currentCollaborator, {
       title: cleanFormValue(formData.get("title")),
       eventId: eventId === "wedding" ? undefined : eventId,
+      vendorId: vendorId === "" || vendorId === "none" ? undefined : vendorId,
       ownerId: cleanFormValue(formData.get("ownerId")),
       dueDate: cleanFormValue(formData.get("dueDate")),
       status: normalizeTaskStatus(formData.get("status")),
@@ -140,12 +150,14 @@ export async function updateTaskAction(formData: FormData) {
   const currentCollaborator = await getCurrentCollaborator();
   const planningData = await getPlanningData();
   const eventId = cleanFormValue(formData.get("eventId"));
+  const vendorId = cleanFormValue(formData.get("vendorId"));
 
   await savePlanningData(
     updateTask(planningData, currentCollaborator, {
       id: cleanFormValue(formData.get("taskId")),
       title: cleanFormValue(formData.get("title")),
       eventId: eventId === "wedding" ? undefined : eventId,
+      vendorId: vendorId === "" || vendorId === "none" ? undefined : vendorId,
       ownerId: cleanFormValue(formData.get("ownerId")),
       dueDate: cleanFormValue(formData.get("dueDate")),
       status: normalizeTaskStatus(formData.get("status")),
@@ -170,6 +182,60 @@ export async function updateTaskStatusAction(formData: FormData) {
   revalidatePlanningPaths();
 }
 
+export async function createVendorAction(formData: FormData) {
+  const currentCollaborator = await getCurrentCollaborator();
+  const planningData = await getPlanningData();
+  const validEventIds = new Set(planningData.events.map((event) => event.id));
+
+  await savePlanningData(
+    createVendor(planningData, currentCollaborator, {
+      name: cleanFormValue(formData.get("name")),
+      category: normalizeVendorCategory(formData.get("category")),
+      status: normalizeVendorStatus(formData.get("status")),
+      eventIds: normalizeVendorEventIds(formData.getAll("eventIds"), validEventIds),
+      contactName: cleanFormValue(formData.get("contactName")),
+      contactEmail: cleanFormValue(formData.get("contactEmail")),
+      contactPhone: cleanFormValue(formData.get("contactPhone")),
+      notes: cleanFormValue(formData.get("notes"))
+    })
+  );
+  revalidatePlanningPaths();
+}
+
+export async function updateVendorAction(formData: FormData) {
+  const currentCollaborator = await getCurrentCollaborator();
+  const planningData = await getPlanningData();
+  const validEventIds = new Set(planningData.events.map((event) => event.id));
+
+  await savePlanningData(
+    updateVendor(planningData, currentCollaborator, {
+      id: cleanFormValue(formData.get("vendorId")),
+      name: cleanFormValue(formData.get("name")),
+      category: normalizeVendorCategory(formData.get("category")),
+      status: normalizeVendorStatus(formData.get("status")),
+      eventIds: normalizeVendorEventIds(formData.getAll("eventIds"), validEventIds),
+      contactName: cleanFormValue(formData.get("contactName")),
+      contactEmail: cleanFormValue(formData.get("contactEmail")),
+      contactPhone: cleanFormValue(formData.get("contactPhone")),
+      notes: cleanFormValue(formData.get("notes"))
+    })
+  );
+  revalidatePlanningPaths();
+}
+
+export async function updateVendorStatusAction(formData: FormData) {
+  const currentCollaborator = await getCurrentCollaborator();
+  const planningData = await getPlanningData();
+
+  await savePlanningData(
+    updateVendorStatus(planningData, currentCollaborator, {
+      vendorId: cleanFormValue(formData.get("vendorId")),
+      status: normalizeVendorStatus(formData.get("status"))
+    })
+  );
+  revalidatePlanningPaths();
+}
+
 function cleanFormValue(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -178,4 +244,5 @@ function revalidatePlanningPaths() {
   revalidatePath("/");
   revalidatePath("/events");
   revalidatePath("/tasks");
+  revalidatePath("/vendors");
 }

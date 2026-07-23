@@ -20,6 +20,7 @@ export type PlanningTask = {
   id: string;
   title: string;
   eventId?: string;
+  vendorId?: string;
   ownerId: string;
   dueDate: string;
   status: TaskStatus;

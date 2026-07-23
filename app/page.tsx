@@ -10,12 +10,12 @@ import {
   getBlockedTasks,
   getCurrentUserAssignments,
   getOverdueTasks,
-  getUpcomingTasks,
   type PlanningTask,
   type WeddingEvent
 } from "@/lib/events-and-tasks";
 import { accessArea, planningAreas } from "@/lib/planning-areas";
 import { getPlanningData } from "@/lib/planning-store";
+import { calculateVendorPipeline } from "@/lib/vendors";
 import { getWedding } from "@/lib/wedding-store";
 
 export default async function DashboardPage() {
@@ -28,7 +28,6 @@ export default async function DashboardPage() {
   const today = new Date();
   const weddingProgress = calculateProgress(planningData.tasks);
   const overdueTasks = getOverdueTasks(planningData.tasks, today);
-  const upcomingTasks = getUpcomingTasks(planningData.tasks, today);
   const blockedTasks = getBlockedTasks(planningData.tasks);
   const attentionNeeded = getAttentionNeeded(planningData.tasks, today);
   const currentAssignments = getCurrentUserAssignments(
@@ -38,6 +37,10 @@ export default async function DashboardPage() {
   const eventProgress = calculateEventProgress(
     planningData.events,
     planningData.tasks
+  );
+  const vendorPipeline = calculateVendorPipeline(planningData.vendors);
+  const bookedVendors = planningData.vendors.filter(
+    (vendor) => vendor.status === "Booked"
   );
   const acceptedCollaborators = roster.collaborators.filter(invitationCanAccessWedding);
   const collaboratorById = new Map(
@@ -74,9 +77,9 @@ export default async function DashboardPage() {
           </p>
         </article>
         <article className="summary-card">
-          <span className="summary-label">Upcoming Tasks</span>
-          <strong>{upcomingTasks.length}</strong>
-          <p>Open Tasks due in the next 14 days.</p>
+          <span className="summary-label">Vendors</span>
+          <strong>{planningData.vendors.length}</strong>
+          <p>{bookedVendors.length} booked Providers.</p>
         </article>
         <article className="summary-card">
           <span className="summary-label">Current Collaborator</span>
@@ -91,7 +94,7 @@ export default async function DashboardPage() {
             <p className="eyebrow">Task-driven Dashboard</p>
             <h2 id="dashboard-tasks-heading">Planning Signals</h2>
           </div>
-          <p>Upcoming, overdue, blocked, and assigned work update from Task Status.</p>
+          <p>Overdue, blocked, and assigned work update from Task Status.</p>
         </div>
 
         <div className="dashboard-columns">
@@ -132,6 +135,39 @@ export default async function DashboardPage() {
               <p>
                 {progress.percent}% complete - {progress.done} of {progress.total} Tasks
               </p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-band" aria-labelledby="vendor-pipeline-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Vendor Pipeline</p>
+            <h2 id="vendor-pipeline-heading">Status by Category</h2>
+          </div>
+          <p>Vendor counts are grouped first by Vendor Status, then by Category.</p>
+        </div>
+
+        <div className="pipeline-grid">
+          {vendorPipeline.map((summary) => (
+            <a className="signal-panel" href="/vendors" key={summary.status}>
+              <div className="record-card-header">
+                <h3>{summary.status}</h3>
+                <strong>{summary.total}</strong>
+              </div>
+              {summary.categories.length === 0 ? (
+                <p className="muted">No Vendors.</p>
+              ) : (
+                <ul className="category-list">
+                  {summary.categories.map((categorySummary) => (
+                    <li key={categorySummary.category}>
+                      <span>{categorySummary.category}</span>
+                      <strong>{categorySummary.total}</strong>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </a>
           ))}
         </div>

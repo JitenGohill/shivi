@@ -14,6 +14,14 @@ import {
   type WeddingEvent
 } from "../lib/events-and-tasks.ts";
 import { type Collaborator } from "../lib/collaborators.ts";
+import {
+  applyVendorStatus,
+  calculateVendorPipeline,
+  createVendorRecord,
+  normalizeVendorCategory,
+  normalizeVendorEventIds,
+  type Vendor
+} from "../lib/vendors.ts";
 
 const owner: Collaborator = {
   id: "owner",
@@ -83,6 +91,42 @@ const tasks: PlanningTask[] = [
   }
 ];
 
+const vendors: Vendor[] = [
+  {
+    id: "lotus",
+    name: "Lotus Banquet Hall",
+    category: "Venue",
+    status: "Shortlisted",
+    eventIds: ["mehndi"],
+    contactName: "Anika Shah",
+    contactEmail: "events@lotus.example",
+    contactPhone: "555-0101",
+    notes: ""
+  },
+  {
+    id: "raaga",
+    name: "Raaga Sounds",
+    category: "Music",
+    status: "Contacted",
+    eventIds: ["mehndi"],
+    contactName: "Dev Mehta",
+    contactEmail: "bookings@raaga.example",
+    contactPhone: "555-0102",
+    notes: ""
+  },
+  {
+    id: "maya",
+    name: "Maya Beauty",
+    category: "Beauty",
+    status: "Contacted",
+    eventIds: [],
+    contactName: "",
+    contactEmail: "",
+    contactPhone: "",
+    notes: ""
+  }
+];
+
 test("Task Status drives Wedding and Event Progress", () => {
   assert.deepEqual(calculateProgress(tasks), {
     total: 4,
@@ -133,4 +177,68 @@ test("Task Status transitions clear stale blocked reasons", () => {
 
   assert.equal(next.status, "In Progress");
   assert.equal(next.blockedReason, "");
+});
+
+test("Vendor creation requires a Vendor Category and preserves Event assignments", () => {
+  const vendor = createVendorRecord("vendor-1", {
+    name: "Shagun Caterers",
+    category: normalizeVendorCategory("Catering"),
+    status: "Researching",
+    eventIds: normalizeVendorEventIds(["mehndi", "unknown", "mehndi"], new Set(["mehndi"])),
+    contactName: "",
+    contactEmail: "",
+    contactPhone: "",
+    notes: ""
+  });
+
+  assert.equal(vendor.category, "Catering");
+  assert.deepEqual(vendor.eventIds, ["mehndi"]);
+  assert.throws(
+    () => normalizeVendorCategory(""),
+    /Vendor Category is required/
+  );
+});
+
+test("Vendor Status updates use the supported pipeline statuses", () => {
+  const next = applyVendorStatus(vendors[0], "Booked");
+
+  assert.equal(next.status, "Booked");
+});
+
+test("Tasks can link to Vendors", () => {
+  const vendorTask: PlanningTask = {
+    id: "contract-follow-up",
+    title: "Follow up on venue contract",
+    vendorId: "lotus",
+    ownerId: "owner",
+    dueDate: "2026-07-28",
+    status: "Not Started",
+    notes: ""
+  };
+
+  assert.equal(vendorTask.vendorId, "lotus");
+});
+
+test("Vendor pipeline groups Vendors by status and category", () => {
+  const pipeline = calculateVendorPipeline(vendors);
+  const contacted = pipeline.find((summary) => summary.status === "Contacted");
+  const shortlisted = pipeline.find((summary) => summary.status === "Shortlisted");
+
+  assert.equal(contacted?.total, 2);
+  assert.deepEqual(contacted?.categories, [
+    {
+      category: "Music",
+      total: 1
+    },
+    {
+      category: "Beauty",
+      total: 1
+    }
+  ]);
+  assert.deepEqual(shortlisted?.categories, [
+    {
+      category: "Venue",
+      total: 1
+    }
+  ]);
 });

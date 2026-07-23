@@ -14,6 +14,7 @@
       "id": "confirm-mehndi-artist",
       "title": "Confirm Mehndi artist shortlist",
       "eventId": "mehndi",
+      "vendorId": "raaga-sounds",
       "ownerId": "bride-owner",
       "dueDate": "2026-07-21",
       "status": "In Progress",
@@ -36,6 +37,34 @@
       "status": "Blocked",
       "blockedReason": "Waiting for family to confirm the ceremony time.",
       "notes": "Wedding-level Task until ceremony Event is added."
+    }
+  ],
+  "vendors": [
+    {
+      "id": "lotus-banquet-hall",
+      "name": "Lotus Banquet Hall",
+      "category": "Venue",
+      "status": "Shortlisted",
+      "eventIds": [
+        "mehndi"
+      ],
+      "contactName": "Anika Shah",
+      "contactEmail": "events@lotus.example",
+      "contactPhone": "555-0101",
+      "notes": "Ask about outside catering and early setup access."
+    },
+    {
+      "id": "raaga-sounds",
+      "name": "Raaga Sounds",
+      "category": "Music",
+      "status": "Contacted",
+      "eventIds": [
+        "mehndi"
+      ],
+      "contactName": "Dev Mehta",
+      "contactEmail": "bookings@raaga.example",
+      "contactPhone": "555-0102",
+      "notes": "Available for dhol and DJ package."
     }
   ]
 }

@@ -11,7 +11,10 @@ type PlanningAreaPageProps = {
 
 export function generateStaticParams() {
   return planningAreas
-    .filter((area) => area.href !== "/events" && area.href !== "/tasks")
+    .filter(
+      (area) =>
+        area.href !== "/events" && area.href !== "/tasks" && area.href !== "/vendors"
+    )
     .map((area) => ({
       area: area.href.slice(1)
     }));
